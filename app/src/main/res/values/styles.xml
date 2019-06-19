@@ -1,0 +1,7 @@
+<resources>
+
+    <style name="AppTheme.Start" parent="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen">
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+</resources>

@@ -1,0 +1,85 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "28.0.3"
+    defaultConfig {
+//        applicationId "com.szgame.h5game.bfwj"
+        applicationId "com.tencent.tmgp.bhwjue"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 2
+        versionName "1.1"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        flavorDimensions "versionCode"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    productFlavors {
+        //测试环境
+        dev {
+            applicationId "com.szgame.h5game"
+//            resValue "string", "app_name", "Dev-App"
+            manifestPlaceholders = [SZ_PACKAGE_ID: "1490000"]
+        }
+
+        taptap{
+            applicationId "com.binghuowj.taptap"
+//            resValue "string", "app_name", "Dev-App"
+            manifestPlaceholders = [SZ_PACKAGE_ID: "147000004"]
+        }
+
+        oppo{
+            applicationId "com.szgame.bhwjue.nearme.gamecenter"
+//            resValue "string", "app_name", "Dev-App"
+            manifestPlaceholders = [SZ_PACKAGE_ID: "1460001"]
+        }
+
+        huawei{
+            applicationId "com.szgame.bhwjue.huawei"
+//            resValue "string", "app_name", "Dev-App"
+            manifestPlaceholders = [SZ_PACKAGE_ID: "1460001"]
+        }
+    }
+
+
+
+    android.applicationVariants.all {
+        variant ->
+            variant.outputs.all {
+                //打包的apk文件名
+                outputFileName = "bhwj_${productFlavors[0].name}_v${defaultConfig.versionName}_${buildType.name}_${releaseTime()}.apk"
+            }
+    }
+}
+
+
+
+repositories{
+    flatDir{
+        dir 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
+//    implementation(name: 'szgamesdk_1.0', ext: 'aar')
+    implementation(name: 'szgamesdk_1.1.0', ext: 'aar')
+}
+
+def releaseTime() {
+    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("UTC"))
+}

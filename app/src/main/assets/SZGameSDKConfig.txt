@@ -1,0 +1,15 @@
+﻿packageChannel = SZ
+packagePluginName = SZ
+
+packageId = 147000100
+
+sdkDefault = SZ
+sdkDefaultPackageName = com.szgame.sdk.external
+sdkLogout = true
+sdkVersion = 1.0.0
+sdkSupportPackageName = com.szgame.sdk.thirdplugin
+
+sdkLoginSupport = SZ
+
+sdkPaySupport = SZ
+
