@@ -92,6 +92,11 @@ public class GameWebActivity extends BaseActivity {
             }
 
             @Override
+            public void onLogout() {
+                sdkInstance.logout(GameWebActivity.this);
+            }
+
+            @Override
             public void onPay(String data) {
                 doPay(data);
             }

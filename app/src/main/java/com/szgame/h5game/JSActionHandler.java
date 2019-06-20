@@ -13,6 +13,7 @@ import com.szgame.h5game.util.LogUtil;
  */
 public class JSActionHandler {
     public static final String ACTION_LOGIN = "doLogin";
+    public static final String ACTION_LOGOUT = "doLogout";
     public static final String ACTION_PAY = "doPay";
     public static final String ACTION_UPDATE_ROLE_INFO = "updateRoleInfo";
 
@@ -24,6 +25,8 @@ public class JSActionHandler {
 
     public interface GameCallBack{
         void onLogin();
+
+        void onLogout();
 
         void onPay(String data);
 
@@ -52,6 +55,11 @@ public class JSActionHandler {
 
                 if(gameCallBack != null)
                     gameCallBack.onLogin();
+
+                break;
+            case ACTION_LOGOUT:
+                if(gameCallBack != null)
+                    gameCallBack.onLogout();
 
                 break;
             case ACTION_PAY:
