@@ -200,6 +200,7 @@ public class GameWebActivity extends BaseActivity {
 
                 jsActionHandler.onLogout(webView);
 
+                sdkInstance.login(GameWebActivity.this);
             }
 
             @Override
