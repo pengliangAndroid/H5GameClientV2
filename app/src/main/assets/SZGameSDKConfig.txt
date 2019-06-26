@@ -1,7 +1,7 @@
 ﻿packageChannel = SZ
 packagePluginName = SZ
 
-packageId = 147000004
+packageId = 147000005
 
 sdkDefault = SZ
 sdkDefaultPackageName = com.szgame.sdk.external
