@@ -16,6 +16,9 @@ public class JSActionHandler {
     public static final String ACTION_LOGOUT = "doLogout";
     public static final String ACTION_PAY = "doPay";
     public static final String ACTION_UPDATE_ROLE_INFO = "updateRoleInfo";
+    public static final String ACTION_UPGRADE_ROLE_INFO = "upgradeRoleInfo";
+    public static final String ACTION_SUBMIT_ROLE_INFO = "submitRoleInfo";
+    public static final String ACTION_CREATE_ROLE_INFO = "createRoleInfo";
 
     //TrackEventHelper trackEventHelper;
 
@@ -31,6 +34,10 @@ public class JSActionHandler {
         void onPay(String data);
 
         void onUpdateRoleInfo(String data);
+
+        void onCreateRoleInfo(String data);
+
+        void onSubmitRoleInfo(String data);
     }
 
     public JSActionHandler(Context context,GameCallBack callBack){
@@ -68,6 +75,19 @@ public class JSActionHandler {
                 if(gameCallBack != null)
                     gameCallBack.onPay(data);
                 break;
+            case ACTION_SUBMIT_ROLE_INFO:
+                data = uri.getQueryParameter("data");
+                LogUtil.d("data:"+data);
+                if(gameCallBack != null)
+                    gameCallBack.onSubmitRoleInfo(data);
+                break;
+            case ACTION_CREATE_ROLE_INFO:
+                data = uri.getQueryParameter("data");
+                LogUtil.d("data:"+data);
+                if(gameCallBack != null)
+                    gameCallBack.onCreateRoleInfo(data);
+                break;
+            case ACTION_UPGRADE_ROLE_INFO:
             case ACTION_UPDATE_ROLE_INFO:
                 data = uri.getQueryParameter("data");
                 LogUtil.d("data:"+data);

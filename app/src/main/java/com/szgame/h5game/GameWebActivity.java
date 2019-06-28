@@ -39,10 +39,14 @@ import com.szgame.sdk.base.callback.SZPaymentCallback;
 import com.szgame.sdk.base.callback.SZSDKCallback;
 import com.szgame.sdk.base.model.SZOrderInfo;
 import com.szgame.sdk.base.model.SZRoleInfo;
+import com.szgame.sdk.base.model.SZSDKEventName;
 import com.szgame.sdk.base.model.SZUserInfo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class GameWebActivity extends BaseActivity {
     private static final int REQUEST_PERMISSION = 924;
@@ -105,6 +109,16 @@ public class GameWebActivity extends BaseActivity {
             public void onUpdateRoleInfo(String data) {
                 updateRoleInfo(data);
             }
+
+            @Override
+            public void onCreateRoleInfo(String data) {
+                createRoleInfo(data);
+            }
+
+            @Override
+            public void onSubmitRoleInfo(String data) {
+                submitRoleInfo(data);
+            }
         });
 
         setFinishOnTouchOutside(false);
@@ -136,6 +150,46 @@ public class GameWebActivity extends BaseActivity {
 
     private void updateRoleInfo(String data){
         LogUtil.i("updateRoleInfo");
+        try {
+            JSONObject jsonObj = new JSONObject(data);
+
+            Map<String,Object> values = new HashMap<>();
+            values.put(SZSDKEventName.ParameterName.GAME_SERVER_ID,jsonObj.getInt("serverId")+"");
+            values.put(SZSDKEventName.ParameterName.GAME_SERVER_NAME,jsonObj.getString("serverName"));
+            values.put(SZSDKEventName.ParameterName.GAME_ROLE_ID,jsonObj.getInt("roleId")+"");
+            values.put(SZSDKEventName.ParameterName.GAME_ROLE_NAME,jsonObj.getString("roleName"));
+
+            values.put(SZSDKEventName.ParameterName.LEVEL_COUNT,jsonObj.getInt("roleLv")+"");
+            values.put(SZSDKEventName.ParameterName.LEVEL_ADD_VALUE,"1");
+
+            sdkInstance.trackEvent(SZSDKEventName.EVENT_LEVEL_ACHIEVED,values);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void submitRoleInfo(String data){
+        LogUtil.i("submitRoleInfo");
+        try {
+            JSONObject jsonObj = new JSONObject(data);
+
+            Map<String,Object> values = new HashMap<>();
+            values.put(SZSDKEventName.ParameterName.GAME_SERVER_ID,jsonObj.getInt("serverId")+"");
+            values.put(SZSDKEventName.ParameterName.GAME_SERVER_NAME,jsonObj.getString("serverName"));
+            values.put(SZSDKEventName.ParameterName.GAME_ROLE_ID,jsonObj.getInt("roleId")+"");
+            values.put(SZSDKEventName.ParameterName.GAME_ROLE_NAME,jsonObj.getString("roleName"));
+
+            values.put(SZSDKEventName.ParameterName.LEVEL_COUNT,jsonObj.getInt("roleLv")+"");
+
+            sdkInstance.trackEvent(SZSDKEventName.EVENT_ENTER_GAME,values);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createRoleInfo(String data){
+        LogUtil.i("createRoleInfo");
         SZRoleInfo roleInfo = new SZRoleInfo();
         try {
             JSONObject jsonObj = new JSONObject(data);
