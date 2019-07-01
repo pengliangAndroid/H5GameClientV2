@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.media.AudioManager;
@@ -378,7 +379,25 @@ public class GameWebActivity extends BaseActivity {
             this.webView.loadUrl(this.gameUrl);
             this.webView.setWebViewClient(new WebViewClient() {
                 public void onReceivedSslError(WebView paramWebView, SslErrorHandler paramSslErrorHandler, SslError paramSslError) {
-                    paramSslErrorHandler.proceed();
+                    final String packageName = GameWebActivity.this.getPackageName();
+                    final PackageManager pm = GameWebActivity.this.getPackageManager();
+
+                    ApplicationInfo appInfo;
+                    try {
+                        appInfo = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+                        if ((appInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+                            // debug = true
+                            //handler.proceed(); 这里是问题代码
+                            paramSslErrorHandler.cancel();
+                            return;
+                        } else {
+                            // debug = false
+                            super.onReceivedSslError(paramWebView, paramSslErrorHandler, paramSslError);
+                        }
+                    } catch (PackageManager.NameNotFoundException e) {
+                        // When it doubt, lock it out!
+                        super.onReceivedSslError(paramWebView, paramSslErrorHandler, paramSslError);
+                    }
                 }
 
                 public boolean shouldOverrideUrlLoading(WebView paramWebView, String paramString) {
