@@ -46,6 +46,7 @@ import com.szgame.sdk.base.model.SZUserInfo;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -147,6 +148,8 @@ public class GameWebActivity extends BaseActivity {
 //        checkPermission(this);
         sdkInstance.onCreate(this);
         doInit();
+
+        splashView.setVisibility(View.GONE);
     }
 
     private void updateRoleInfo(String data){
@@ -340,7 +343,8 @@ public class GameWebActivity extends BaseActivity {
 
         localWebSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         localWebSettings.setDefaultTextEncodingName("UTF-8");
-        localWebSettings.setDatabaseEnabled(true);
+//        localWebSettings.setDatabaseEnabled(true);
+        localWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         localWebSettings.setDomStorageEnabled(true);
         localWebSettings.setJavaScriptEnabled(true);
         localWebSettings.setGeolocationEnabled(true);
@@ -370,6 +374,7 @@ public class GameWebActivity extends BaseActivity {
             }
         });
 
+        clearWebViewCache();
         //loadH5Game();
 
     }
@@ -699,6 +704,7 @@ public class GameWebActivity extends BaseActivity {
                             //
 //                            final String appKey = data.getString("app_key");
                             LogUtil.d("gameUrl:"+link);
+                            link = "https://h5.best91yx.com/v7web/play.html?game_id=1007&web_type=0&packet_id=1007000003";
 //                            LogUtil.d("appKey:"+appKey);
 
                             if(TextUtils.isEmpty(link)){
@@ -780,5 +786,52 @@ public class GameWebActivity extends BaseActivity {
                 })
                 .setCancelable(true)
                 .show();
+    }
+
+
+    public void clearWebViewCache(){
+        //清理Webview缓存数据库
+        try {
+            deleteDatabase("webview.db");
+            deleteDatabase("webviewCache.db");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //WebView 缓存文件
+
+        File webviewCacheDir = new File(getCacheDir().getAbsolutePath()+"/webviewCache");
+        LogUtil.i("webviewCacheDir path="+webviewCacheDir.getAbsolutePath());
+
+        //删除webview 缓存目录
+        if(webviewCacheDir.exists()){
+            deleteFile(webviewCacheDir);
+        }
+
+//        webView.clearCache(true);
+    }
+
+    /**
+     * 递归删除 文件/文件夹
+     *
+     * @param file
+     */
+    public void deleteFile(File file) {
+
+        LogUtil.i("delete file path=" + file.getAbsolutePath());
+
+        if (file.exists()) {
+            if (file.isFile()) {
+                file.delete();
+            } else if (file.isDirectory()) {
+                File files[] = file.listFiles();
+                for (int i = 0; i < files.length; i++) {
+                    deleteFile(files[i]);
+                }
+            }
+            file.delete();
+        } else {
+            LogUtil.e("delete file no exists " + file.getAbsolutePath());
+        }
     }
 }
