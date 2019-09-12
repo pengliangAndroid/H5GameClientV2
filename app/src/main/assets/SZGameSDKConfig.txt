@@ -1,7 +1,13 @@
-﻿packageChannel = SZ
-packagePluginName = SZ
+﻿#后台包渠道
+packageChannel = a_jiayouw
+#前端包插件名
+packagePluginName = DingYou
 
-packageId = 147000005
+#包ID
+packageId = 147331076
+
+dyAppId = 188046
+dyAppKey = 648dee21ff5747fd131579
 
 sdkDefault = SZ
 sdkDefaultPackageName = com.szgame.sdk.external
@@ -9,7 +15,6 @@ sdkLogout = true
 sdkVersion = 1.0.0
 sdkSupportPackageName = com.szgame.sdk.thirdplugin
 
-sdkLoginSupport = SZ
+sdkLoginSupport = DingYou
 
-sdkPaySupport = SZ
-
+sdkPaySupport = DingYou

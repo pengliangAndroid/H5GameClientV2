@@ -1,6 +1,5 @@
 package com.szgame.h5game;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,8 +13,6 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -34,7 +31,6 @@ import com.szgame.h5game.util.DeviceUtils;
 import com.szgame.h5game.util.HttpUtils;
 import com.szgame.h5game.util.LogUtil;
 import com.szgame.sdk.SZGameSDK;
-import com.szgame.sdk.base.SGameLog;
 import com.szgame.sdk.base.callback.SZExitCallback;
 import com.szgame.sdk.base.callback.SZPaymentCallback;
 import com.szgame.sdk.base.callback.SZSDKCallback;
@@ -149,7 +145,7 @@ public class GameWebActivity extends BaseActivity {
         sdkInstance.onCreate(this);
         doInit();
 
-        splashView.setVisibility(View.GONE);
+//        splashView.setVisibility(View.GONE);
     }
 
     private void updateRoleInfo(String data){
@@ -527,6 +523,7 @@ public class GameWebActivity extends BaseActivity {
 
     public void onConfigurationChanged(Configuration paramConfiguration) {
         super.onConfigurationChanged(paramConfiguration);
+        sdkInstance.onConfigurationChanged(paramConfiguration);
     }
 
 
@@ -552,26 +549,26 @@ public class GameWebActivity extends BaseActivity {
     private void checkPermission(Activity activity){
         //if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
         //当targetVersion 较大时  动态申请读写权限和读取手机状态等权限(一般此方法在onCreate执行)  具体权限 具体而定
-        try {
-            //check权限
-            if ((ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)
-                    || (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-                //没有,申请权限权限数组
-                ActivityCompat.requestPermissions(activity, new String[] { Manifest.permission.READ_PHONE_STATE ,Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION);
-            } else {
-                // 有 则执行初始化
-                //startMain();
-                sdkInstance.onCreate(this);
-                doInit();
-            }
-        } catch (Exception e) {
-            //异常  继续申请
-            ActivityCompat.requestPermissions(activity, new String[] { Manifest.permission.READ_PHONE_STATE ,Manifest.permission.WRITE_EXTERNAL_STORAGE }, REQUEST_PERMISSION);
-        }
+//        try {
+//            //check权限
+//            if ((ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)
+//                    || (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
+//                //没有,申请权限权限数组
+//                ActivityCompat.requestPermissions(activity, new String[] { Manifest.permission.READ_PHONE_STATE ,Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION);
+//            } else {
+//                // 有 则执行初始化
+//                //startMain();
+//                sdkInstance.onCreate(this);
+//                doInit();
+//            }
+//        } catch (Exception e) {
+//            //异常  继续申请
+//            ActivityCompat.requestPermissions(activity, new String[] { Manifest.permission.READ_PHONE_STATE ,Manifest.permission.WRITE_EXTERNAL_STORAGE }, REQUEST_PERMISSION);
+//        }
         //}
     }
 
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    /*public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         SGameLog.i("onRequestPermissionsResult:"+requestCode);
         if(requestCode != REQUEST_PERMISSION)
             return;
@@ -587,7 +584,7 @@ public class GameWebActivity extends BaseActivity {
             //失败  这里逻辑以游戏为准 这里只是模拟申请失败 cp方可改为继续申请权限 或者退出游戏 或者其他逻辑
             checkPermission(this);
         }
-    }
+    }*/
 
 
     @Override
@@ -704,7 +701,7 @@ public class GameWebActivity extends BaseActivity {
                             //
 //                            final String appKey = data.getString("app_key");
                             LogUtil.d("gameUrl:"+link);
-                            link = "https://h5.best91yx.com/v7web/play.html?game_id=1007&web_type=0&packet_id=1007000003";
+//                            link = "https://h5.best91yx.com/v7web/play.html?game_id=1007&web_type=0&packet_id=1007000003";
 //                            LogUtil.d("appKey:"+appKey);
 
                             if(TextUtils.isEmpty(link)){
@@ -780,8 +777,9 @@ public class GameWebActivity extends BaseActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        finish();
-                        android.os.Process.killProcess(android.os.Process.myPid());
+
+                       /* finish();
+                        android.os.Process.killProcess(android.os.Process.myPid());*/
                     }
                 })
                 .setCancelable(true)

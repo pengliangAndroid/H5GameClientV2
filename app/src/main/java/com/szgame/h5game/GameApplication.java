@@ -1,18 +1,16 @@
 package com.szgame.h5game;
 
-import android.app.Application;
-
-import com.szgame.sdk.SZGameSDKApplication;
+import com.szgame.sdk.thirdplugin.DingYouPluginApplication;
 
 /**
  * @author pengl
  */
-public class GameApplication extends Application {
+public class GameApplication extends DingYouPluginApplication {
 
     @Override
     public void onCreate() {
         super.onCreate();
-        SZGameSDKApplication.attach(this);
+//        SZGameSDKApplication.attach(this);
     }
 
 }
