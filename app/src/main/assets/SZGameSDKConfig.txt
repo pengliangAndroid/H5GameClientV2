@@ -4,10 +4,10 @@ packageChannel = a_jiayouw
 packagePluginName = DingYou
 
 #包ID
-packageId = 147331073
+packageId = 147331076
 
-dyAppId = 188045
-dyAppKey = 3b28e378276e6ab4b03ccf
+dyAppId = 188046
+dyAppKey = 648dee21ff5747fd131579
 
 sdkDefault = SZ
 sdkDefaultPackageName = com.szgame.sdk.external
