@@ -150,42 +150,49 @@ public class GameWebActivity extends BaseActivity {
 
     private void updateRoleInfo(String data){
         LogUtil.i("updateRoleInfo");
+
+        Map<String,Object> values = new HashMap<>();
         try {
             JSONObject jsonObj = new JSONObject(data);
 
-            Map<String,Object> values = new HashMap<>();
-            values.put(SZSDKEventName.ParameterName.GAME_SERVER_ID,jsonObj.getInt("serverId")+"");
+            values.put(SZSDKEventName.ParameterName.GAME_SERVER_ID,jsonObj.getString("serverId"));
             values.put(SZSDKEventName.ParameterName.GAME_SERVER_NAME,jsonObj.getString("serverName"));
-            values.put(SZSDKEventName.ParameterName.GAME_ROLE_ID,jsonObj.getInt("roleId")+"");
+            values.put(SZSDKEventName.ParameterName.GAME_ROLE_ID,jsonObj.getString("roleId"));
             values.put(SZSDKEventName.ParameterName.GAME_ROLE_NAME,jsonObj.getString("roleName"));
 
-            values.put(SZSDKEventName.ParameterName.LEVEL_COUNT,jsonObj.getInt("roleLv")+"");
+            values.put(SZSDKEventName.ParameterName.LEVEL_COUNT,jsonObj.getString("roleLv"));
             values.put(SZSDKEventName.ParameterName.LEVEL_ADD_VALUE,"1");
-
-            sdkInstance.trackEvent(SZSDKEventName.EVENT_LEVEL_ACHIEVED,values);
+            values.put("ce",jsonObj.getString("ce"));
+            values.put("ext",jsonObj.getString("ext"));
 
         } catch (JSONException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
+
+        sdkInstance.trackEvent(SZSDKEventName.EVENT_LEVEL_ACHIEVED,values);
     }
 
     private void submitRoleInfo(String data){
         LogUtil.i("submitRoleInfo");
+        Map<String,Object> values = new HashMap<>();
         try {
             JSONObject jsonObj = new JSONObject(data);
 
-            Map<String,Object> values = new HashMap<>();
-            values.put(SZSDKEventName.ParameterName.GAME_SERVER_ID,jsonObj.getInt("serverId")+"");
+
+            values.put(SZSDKEventName.ParameterName.GAME_SERVER_ID,jsonObj.getString("serverId"));
             values.put(SZSDKEventName.ParameterName.GAME_SERVER_NAME,jsonObj.getString("serverName"));
-            values.put(SZSDKEventName.ParameterName.GAME_ROLE_ID,jsonObj.getInt("roleId")+"");
+            values.put(SZSDKEventName.ParameterName.GAME_ROLE_ID,jsonObj.getString("roleId"));
             values.put(SZSDKEventName.ParameterName.GAME_ROLE_NAME,jsonObj.getString("roleName"));
 
-            values.put(SZSDKEventName.ParameterName.LEVEL_COUNT,jsonObj.getInt("roleLv")+"");
+            values.put(SZSDKEventName.ParameterName.LEVEL_COUNT,jsonObj.getString("roleLv"));
+            values.put("ce",jsonObj.getString("ce"));
+            values.put("ext",jsonObj.getString("ext"));
 
-            sdkInstance.trackEvent(SZSDKEventName.EVENT_ENTER_GAME,values);
         } catch (JSONException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
+
+        sdkInstance.trackEvent(SZSDKEventName.EVENT_ENTER_GAME,values);
     }
 
     private void createRoleInfo(String data){
@@ -194,12 +201,12 @@ public class GameWebActivity extends BaseActivity {
         try {
             JSONObject jsonObj = new JSONObject(data);
             roleInfo.setRoleServerId(jsonObj.getInt("serverId"));
-            roleInfo.setRoleId(jsonObj.getInt("roleId")+"");
+            roleInfo.setRoleId(jsonObj.getString("roleId"));
             roleInfo.setServerName(jsonObj.getString("serverName"));
             roleInfo.setRoleName(jsonObj.getString("roleName"));
 
-            roleInfo.setVipLevel(jsonObj.getInt("vip")+"");
-            roleInfo.setRoleLevel(jsonObj.getInt("roleLv")+"");
+            roleInfo.setVipLevel(jsonObj.getString("vip"));
+            roleInfo.setRoleLevel(jsonObj.getString("roleLv"));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -254,7 +261,7 @@ public class GameWebActivity extends BaseActivity {
 
                 jsActionHandler.onLogout(webView);
 
-                sdkInstance.login(GameWebActivity.this);
+                //sdkInstance.login(GameWebActivity.this);
             }
 
             @Override
@@ -314,6 +321,10 @@ public class GameWebActivity extends BaseActivity {
             localWebSettings.setAllowFileAccessFromFileURLs(true);
             localWebSettings.setAllowUniversalAccessFromFileURLs(true);
         }
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            WebView.setWebContentsDebuggingEnabled(true);
+//        }
 
         localWebSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
         localWebSettings.setSupportZoom(false);
@@ -741,6 +752,7 @@ public class GameWebActivity extends BaseActivity {
         //Toast.makeText(this,"加载游戏失败",Toast.LENGTH_SHORT).show();
         new AlertDialog.Builder(this,AlertDialog.THEME_HOLO_DARK)
                 .setTitle(null)
+
                 .setMessage("加载游戏失败,确定重新加载游戏？")
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override

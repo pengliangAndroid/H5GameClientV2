@@ -1,13 +1,11 @@
 ﻿#后台包渠道
-packageChannel = a_jiayouw
+packageChannel = a_xiao7
 #前端包插件名
-packagePluginName = DingYou
+packagePluginName = X7
+#后台包ID
+packageId = 1067331533
 
-#包ID
-packageId = 147331076
-
-dyAppId = 188046
-dyAppKey = 648dee21ff5747fd131579
+x7AppKey = 1505f1157e6f03e6b1e3af8060fefdfa
 
 sdkDefault = SZ
 sdkDefaultPackageName = com.szgame.sdk.external
@@ -15,6 +13,10 @@ sdkLogout = true
 sdkVersion = 1.0.0
 sdkSupportPackageName = com.szgame.sdk.thirdplugin
 
-sdkLoginSupport = DingYou
+#SZ
+sdkLoginSupport = X7
 
-sdkPaySupport = DingYou
+#SZ
+sdkPaySupport = X7
+
+sdkAnalyticSupport = X7

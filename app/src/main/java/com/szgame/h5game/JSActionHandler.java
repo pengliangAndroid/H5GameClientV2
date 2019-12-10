@@ -102,7 +102,8 @@ public class JSActionHandler {
     }
 
     public void onLogout(WebView webView){
-        execJavaScript(webView,"javascript:logout()");
+        LogUtil.i("onLogout");
+        execJavaScript(webView,"javascript:logoutSuccess()");
     }
 
     /*public void initTrack(String appKey){
