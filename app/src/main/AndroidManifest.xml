@@ -1,50 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="com.szgame.h5game">
 
     <application
         android:name=".GameApplication"
         android:allowBackup="true"
         android:icon="@mipmap/icon"
+        tools:replace="android:theme,android:label"
         android:label="@string/app_name_main"
         android:roundIcon="@mipmap/icon"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen">
+        android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen"
+        >
         <activity
             android:name=".GameWebActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Start">
-
-        </activity>
-
-        <meta-data
-            android:name="SZ_GAME_ID"
-            android:value="1067"/>
-        <meta-data
-            android:name="SZ_PACKAGE_ID"
-            android:value="1067331533"/>
-
-        <provider
-            android:name="com.smwl.smsdk.X7Provider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/x7_provider_paths"/>
-        </provider>
-
-        <activity android:name=".SplashActivity"
-                  android:screenOrientation="portrait"
-                  android:theme="@style/AppTheme.Start"
-            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="SZ_GAME_ID"
+            android:value="1107"/>
+        <meta-data
+            android:name="SZ_PACKAGE_ID"
+            android:value="1107331985"/>
+
+
+        <activity android:name=".SplashActivity"
+                  android:screenOrientation="portrait"
+                  android:theme="@style/AppTheme.Start"
+            >
+
+        </activity>
+
+        <!--<provider-->
+            <!--android:name="com.smwl.smsdk.X7Provider"-->
+            <!--android:authorities="${applicationId}.x7provider"-->
+            <!--android:exported="false"-->
+            <!--android:grantUriPermissions="true">-->
+            <!--&lt;!&ndash; 元数据 &ndash;&gt;-->
+            <!--<meta-data-->
+                <!--android:name="android.support.FILE_PROVIDER_PATHS"-->
+                <!--android:resource="@xml/x7_provider_paths" />-->
+        <!--</provider>-->
+        <!--<provider-->
+            <!--android:name="com.netease.nimlib.ipc.NIMContentProvider"-->
+            <!--android:authorities="${applicationId}.ipc.provider"-->
+            <!--android:exported="false"-->
+            <!--android:process=":core" />-->
+        <!--<provider-->
+            <!--android:name="com.netease.nim.uikit.common.media.picker.model.GenericFileProvider"-->
+            <!--android:authorities="${applicationId}.generic.file.provider"-->
+            <!--android:exported="false"-->
+            <!--android:grantUriPermissions="true">-->
+            <!--<meta-data-->
+                <!--android:name="android.support.FILE_PROVIDER_PATHS"-->
+                <!--android:resource="@xml/yunxin_provider_paths" />-->
+        <!--</provider>-->
+        <!--<activity-->
+            <!--android:name="com.smwl.smsdk.activity.im.YunXinToX7ActX7SDK"-->
+            <!--android:configChanges="orientation|screenSize|keyboardHidden|navigation|screenLayout"-->
+            <!--android:theme="@android:style/Theme.Translucent.NoTitleBar"-->
+            <!--android:screenOrientation="behind">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="${applicationId}.yunXin_jumpTo_YunXinToX7Act" />-->
+
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
     </application>
 
 </manifest>

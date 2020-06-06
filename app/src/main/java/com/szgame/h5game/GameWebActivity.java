@@ -18,8 +18,10 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.SslErrorHandler;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -66,7 +68,7 @@ public class GameWebActivity extends BaseActivity {
     private AudioManager audioManager;
     private AudioManager.OnAudioFocusChangeListener audioListener;
 
-    private JSActionHandler jsActionHandler;
+//    private JSActionHandler jsActionHandler;
 
     private SZGameSDK sdkInstance;
 
@@ -87,37 +89,37 @@ public class GameWebActivity extends BaseActivity {
         sdkInstance = SZGameSDK.getInstance();
 
 
-        jsActionHandler = new JSActionHandler(this, new JSActionHandler.GameCallBack() {
-            @Override
-            public void onLogin() {
-                sdkInstance.login(GameWebActivity.this);
-            }
-
-            @Override
-            public void onLogout() {
-                sdkInstance.logout(GameWebActivity.this);
-            }
-
-            @Override
-            public void onPay(String data) {
-                doPay(data);
-            }
-
-            @Override
-            public void onUpdateRoleInfo(String data) {
-                updateRoleInfo(data);
-            }
-
-            @Override
-            public void onCreateRoleInfo(String data) {
-                createRoleInfo(data);
-            }
-
-            @Override
-            public void onSubmitRoleInfo(String data) {
-                submitRoleInfo(data);
-            }
-        });
+//        jsActionHandler = new JSActionHandler(this, new JSActionHandler.GameCallBack() {
+//            @Override
+//            public void onLogin() {
+//                sdkInstance.login(GameWebActivity.this);
+//            }
+//
+//            @Override
+//            public void onLogout() {
+//                sdkInstance.logout(GameWebActivity.this);
+//            }
+//
+//            @Override
+//            public void onPay(String data) {
+//                doPay(data);
+//            }
+//
+//            @Override
+//            public void onUpdateRoleInfo(String data) {
+//                updateRoleInfo(data);
+//            }
+//
+//            @Override
+//            public void onCreateRoleInfo(String data) {
+//                createRoleInfo(data);
+//            }
+//
+//            @Override
+//            public void onSubmitRoleInfo(String data) {
+//                submitRoleInfo(data);
+//            }
+//        });
 
         setFinishOnTouchOutside(false);
 
@@ -148,28 +150,46 @@ public class GameWebActivity extends BaseActivity {
 //        splashView.setVisibility(View.GONE);
     }
 
+    boolean isFirstUpdate;
+
+    //{"gameId":1107,"userId":"test01","gameServerId":"1","gameServerName":"修真二主干","roleId":4294967504,
+    // "roleName":"昆仑琼泽","newRole":0,"partyId":"","partyName":"","sGuide":1,"level":1,
+    // "coin":0,"vip":0,"ce":159122,"time":1591254308,"msgtype":"upload_role_info"}
     private void updateRoleInfo(String data){
-        LogUtil.i("updateRoleInfo");
+        LogUtil.i("updateRoleInfo:"+data);
 
         Map<String,Object> values = new HashMap<>();
         try {
             JSONObject jsonObj = new JSONObject(data);
+            int newRole = jsonObj.getInt("newRole");
+            if(newRole == 1){
+                createRoleInfo(data);
+            }else{
+                if(!isFirstUpdate){
+                    isFirstUpdate = true;
+                    submitRoleInfo(data);
+                    return;
+                }
+                values.put(SZSDKEventName.ParameterName.GAME_SERVER_ID,jsonObj.getString("gameServerId"));
+                values.put(SZSDKEventName.ParameterName.GAME_SERVER_NAME,jsonObj.getString("gameServerName"));
+                values.put(SZSDKEventName.ParameterName.GAME_ROLE_ID,jsonObj.getLong("roleId"));
+                values.put(SZSDKEventName.ParameterName.GAME_ROLE_NAME,jsonObj.getString("roleName"));
 
-            values.put(SZSDKEventName.ParameterName.GAME_SERVER_ID,jsonObj.getString("serverId"));
-            values.put(SZSDKEventName.ParameterName.GAME_SERVER_NAME,jsonObj.getString("serverName"));
-            values.put(SZSDKEventName.ParameterName.GAME_ROLE_ID,jsonObj.getString("roleId"));
-            values.put(SZSDKEventName.ParameterName.GAME_ROLE_NAME,jsonObj.getString("roleName"));
+                values.put(SZSDKEventName.ParameterName.VIP_LEVEL,jsonObj.getString("vip"));
+                values.put(SZSDKEventName.ParameterName.PART_NAME,jsonObj.getString("partyName"));
+                values.put(SZSDKEventName.ParameterName.PART_ID,jsonObj.getString("partyId"));
 
-            values.put(SZSDKEventName.ParameterName.LEVEL_COUNT,jsonObj.getString("roleLv"));
-            values.put(SZSDKEventName.ParameterName.LEVEL_ADD_VALUE,"1");
-            values.put("ce",jsonObj.getString("ce"));
-            values.put("ext",jsonObj.getString("ext"));
+                values.put(SZSDKEventName.ParameterName.LEVEL_COUNT,jsonObj.getInt("level"));
+//                values.put(SZSDKEventName.ParameterName.LEVEL_ADD_VALUE,"1");
+                values.put("ce",jsonObj.getInt("ce"));
+                sdkInstance.trackEvent(SZSDKEventName.EVENT_LEVEL_ACHIEVED,values);
+            }
+
+//            values.put("ext",jsonObj.getString("ext"));
 
         } catch (JSONException e) {
 //            e.printStackTrace();
         }
-
-        sdkInstance.trackEvent(SZSDKEventName.EVENT_LEVEL_ACHIEVED,values);
     }
 
     private void submitRoleInfo(String data){
@@ -179,14 +199,17 @@ public class GameWebActivity extends BaseActivity {
             JSONObject jsonObj = new JSONObject(data);
 
 
-            values.put(SZSDKEventName.ParameterName.GAME_SERVER_ID,jsonObj.getString("serverId"));
-            values.put(SZSDKEventName.ParameterName.GAME_SERVER_NAME,jsonObj.getString("serverName"));
-            values.put(SZSDKEventName.ParameterName.GAME_ROLE_ID,jsonObj.getString("roleId"));
+            values.put(SZSDKEventName.ParameterName.GAME_SERVER_ID,jsonObj.getString("gameServerId"));
+            values.put(SZSDKEventName.ParameterName.GAME_SERVER_NAME,jsonObj.getString("gameServerName"));
+            values.put(SZSDKEventName.ParameterName.GAME_ROLE_ID,jsonObj.getLong("roleId"));
             values.put(SZSDKEventName.ParameterName.GAME_ROLE_NAME,jsonObj.getString("roleName"));
 
-            values.put(SZSDKEventName.ParameterName.LEVEL_COUNT,jsonObj.getString("roleLv"));
-            values.put("ce",jsonObj.getString("ce"));
-            values.put("ext",jsonObj.getString("ext"));
+            values.put(SZSDKEventName.ParameterName.VIP_LEVEL,jsonObj.getString("vip"));
+            values.put(SZSDKEventName.ParameterName.PART_NAME,jsonObj.getString("partyName"));
+            values.put(SZSDKEventName.ParameterName.PART_ID,jsonObj.getString("partyId"));
+
+            values.put(SZSDKEventName.ParameterName.LEVEL_COUNT,jsonObj.getInt("level"));
+            values.put("ce",jsonObj.getInt("ce"));
 
         } catch (JSONException e) {
 //            e.printStackTrace();
@@ -200,13 +223,13 @@ public class GameWebActivity extends BaseActivity {
         SZRoleInfo roleInfo = new SZRoleInfo();
         try {
             JSONObject jsonObj = new JSONObject(data);
-            roleInfo.setRoleServerId(jsonObj.getInt("serverId"));
-            roleInfo.setRoleId(jsonObj.getString("roleId"));
-            roleInfo.setServerName(jsonObj.getString("serverName"));
+            roleInfo.setRoleServerId(jsonObj.getInt("gameServerId"));
+            roleInfo.setRoleId(jsonObj.getLong("roleId")+"");
+            roleInfo.setServerName(jsonObj.getString("gameServerName"));
             roleInfo.setRoleName(jsonObj.getString("roleName"));
 
-            roleInfo.setVipLevel(jsonObj.getString("vip"));
-            roleInfo.setRoleLevel(jsonObj.getString("roleLv"));
+            roleInfo.setVipLevel(jsonObj.getInt("vip")+"");
+            roleInfo.setRoleLevel(jsonObj.getInt("level")+"");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -223,7 +246,9 @@ public class GameWebActivity extends BaseActivity {
             public void onInitSuccess() {
                 LogUtil.i("onInitSuccess");
 
-                //loadH5Game();
+                splashView.setVisibility(View.GONE);
+//                gameUrl = "http://139.9.73.15:83/game/sgsm/index.php?sdk=1";
+//                loadH5Game();
                 getNetGameUrl();
             }
 
@@ -238,7 +263,8 @@ public class GameWebActivity extends BaseActivity {
             public void onLoginSuccess(SZUserInfo userInfo, boolean isSwitchAccount) {
                 LogUtil.i("onLoginSuccess:" + userInfo.toString());
                 LogUtil.i("isSwitchAccount:" + isSwitchAccount);
-                jsActionHandler.onLoginSuccess(webView,userInfo.getUid(),userInfo.getToken());
+//                jsActionHandler.onLoginSuccess(webView,userInfo.getUid(),userInfo.getToken());
+                GameWebActivity.this.onLoginSuccess(webView,userInfo);
                 curLoginNumber = 0;
                 splashView.setVisibility(View.GONE);
             }
@@ -252,15 +278,15 @@ public class GameWebActivity extends BaseActivity {
                 if(curLoginNumber < 3){
                     sdkInstance.login(GameWebActivity.this);
                 }*/
-                onLoginGameFail();
+//                onLoginGameFail();
             }
 
             @Override
             public void onLogoutSuccess() {
                 LogUtil.i("onLogoutSuccess:");
 
-                jsActionHandler.onLogout(webView);
-
+//                jsActionHandler.onLogout(webView);
+                GameWebActivity.this.onLogout(webView);
                 //sdkInstance.login(GameWebActivity.this);
             }
 
@@ -290,12 +316,12 @@ public class GameWebActivity extends BaseActivity {
                 startActivity(new Intent("android.intent.action.VIEW", Uri.parse(paramString)));
                 return true;
             }else if(paramString.startsWith(SZ_SDK_PREFIX)){
-
-                try {
-                    jsActionHandler.doJSAction(webView,paramString);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
+//
+//                try {
+//                    jsActionHandler.doJSAction(webView,paramString);
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
 
                 return true;
             }
@@ -317,6 +343,11 @@ public class GameWebActivity extends BaseActivity {
 //        this.rootLayout.addView(this.webView);
         WebSettings localWebSettings = this.webView.getSettings();
         localWebSettings.setAllowFileAccess(true);
+
+        if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
+
         if (Build.VERSION.SDK_INT >= 16) {
             localWebSettings.setAllowFileAccessFromFileURLs(true);
             localWebSettings.setAllowUniversalAccessFromFileURLs(true);
@@ -347,6 +378,12 @@ public class GameWebActivity extends BaseActivity {
         }else {
             localWebSettings.setDefaultZoom(WebSettings.ZoomDensity.MEDIUM);
         }
+
+        this.webView.addJavascriptInterface(new JsOperation(this), "Android");
+
+
+        String ua = webView.getSettings().getUserAgentString();
+        webView.getSettings().setUserAgentString(ua+";SzApp");
 
         localWebSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         localWebSettings.setDefaultTextEncodingName("UTF-8");
@@ -384,6 +421,108 @@ public class GameWebActivity extends BaseActivity {
         clearWebViewCache();
         //loadH5Game();
 
+    }
+
+   private class JsOperation {
+
+        Activity mActivity;
+
+        public JsOperation(Activity activity) {
+            mActivity = activity;
+        }
+
+        //    测试方法
+        @JavascriptInterface
+        public void login() {
+            LogUtil.i("js login");
+            sdkInstance.login(GameWebActivity.this);
+        }
+
+        @JavascriptInterface
+        public void logout() {
+            LogUtil.i("js logout");
+            sdkInstance.logout(GameWebActivity.this);
+        }
+
+        @JavascriptInterface
+        public void onPay(String data){
+            LogUtil.i("js onPay");
+            doPay(data);
+        }
+
+        @JavascriptInterface
+        public void onUpdateRoleInfo(String data){
+            LogUtil.i("js onUpdateRoleInfo");
+            updateRoleInfo(data);
+        }
+
+//        @JavascriptInterface
+//        public void onCreateRoleInfo(String data){
+//            createRoleInfo(data);
+//        }
+//
+//        @JavascriptInterface
+//        public void onSubmitRoleInfo(String data){
+//            submitRoleInfo(data);
+//        }
+    }
+
+    public void onLoginSuccess(WebView webView,SZUserInfo userInfo){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("status",true);
+            jsonObject.put("userId",userInfo.getUid());
+            jsonObject.put("token", userInfo.getToken());
+            jsonObject.put("ext",userInfo.getExt());
+            jsonObject.put("channId",userInfo.getChannelId());
+            jsonObject.put("message","success");
+
+//            jsonObject.put("userId","jack114809");
+//            jsonObject.put("token", "szuser_hu3nxfvhqmkp6kgz1o");
+//            jsonObject.put("ext","");
+//            jsonObject.put("channId","16");
+//            jsonObject.put("message","success");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        LogUtil.i(jsonObject.toString());
+
+        execJavaScript(webView,"javascript:window.shoumeng.loginCallback("+jsonObject.toString()+")");
+    }
+
+    public void onLogout(WebView webView){
+        LogUtil.i("onLogout");
+//        execJavaScript(webView,"javascript:window.shoumeng.gameLogout({})");
+        clearWebViewCache();
+        loadH5Game();
+    }
+
+    public void onUpdateRoleInfo(WebView webView,String data){
+        execJavaScript(webView,"javascript:UpdateRoleInfo('"+data+"')");
+    }
+    public void onCreateRoleInfo(String data){
+        execJavaScript(webView,"javascript:CreateRoleInfo('"+data+"')");
+    }
+    public void onSubmitRoleInfo(String data){
+        execJavaScript(webView,"javascript:SubmitRoleInfo('"+data+"')");
+    }
+    public void  onPay(String data){
+        execJavaScript(webView,"javascript:pay('"+data+"')");
+    }
+
+    private void execJavaScript(WebView webView,String script){
+        LogUtil.i("script:"+script);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            webView.evaluateJavascript(script, new ValueCallback<String>() {
+                @Override
+                public void onReceiveValue(String value) {
+                    //此处为 js 返回的结果
+                    LogUtil.d("onReceiveValue:"+value);
+                }
+            });
+        }else{
+            webView.loadUrl(script);
+        }
     }
 
     private void loadH5Game() {
@@ -429,6 +568,7 @@ public class GameWebActivity extends BaseActivity {
         }
     }
 
+
     private void doPay(String data){
         LogUtil.i("onPay:"+data);
         ItemInfo itemInfo = buildItemInfo(data);
@@ -470,28 +610,28 @@ public class GameWebActivity extends BaseActivity {
     private ItemInfo buildItemInfo(String json){
         //{"amount":1,"paytime":"1558575868","goodId":1,"goodName":"钻石","roleId":131074,
         // "roleName":"天空媚儿","serverId":2,"serverName":"2服","notifyUrl":"https://mzqysdk.xiaozigame.com/gmweb_entrance/uc/pay","extension":"1-13-131074-2-uc_gs_nc7le74ucb8cpydi-1558575868","outTradeNo":"1-13-131074-2-uc_gs_nc7le74ucb8cpydi-1558575868","rolelv":13}
-
+        //{"gameId":1107,"userId":"jack114809","cpOrderId":"1591251402804_4294967327_1","gameServerId":"1","gameServerName":"修真二主干",
+        // "totalFee":6,"coinName":"仙玉","ratio":10,"price":600,"productName":"充值6元","productId":1,"roleId":4294967327,"roleName":"青屿水苍","level":1,"coin":19,"vip":0,"ce":159287,"ext":"1_jack114809_0","time":1591251402,"payNotifyUrl":"","msgtype":"pay"}
         ItemInfo itemInfo = new ItemInfo();
         try {
             JSONObject jsonObj = new JSONObject(json);
-            itemInfo.setExtension(jsonObj.getString("extension"));
-            itemInfo.setGoodId(jsonObj.getInt("goodId"));
+            itemInfo.setExtension(jsonObj.getString("ext"));
+            itemInfo.setGoodId(jsonObj.getInt("productId"));
 
-            int price = jsonObj.getInt("amount");
+            int price = jsonObj.getInt("totalFee");
             /*BigDecimal decimal = new BigDecimal(itemInfo.getGame_price());
             String price = decimal.setScale(2, RoundingMode.HALF_UP).toString();*/
             Log.d("price",price+"");
             itemInfo.setAmount(Double.valueOf(price)+"");
             itemInfo.setRoleId(jsonObj.getInt("roleId"));
-            itemInfo.setNotifyUrl(jsonObj.getString("notifyUrl"));
-            itemInfo.setOutTradeNo(jsonObj.getString("outTradeNo"));
-            itemInfo.setPaytime(jsonObj.getString("paytime"));
+            itemInfo.setOutTradeNo(jsonObj.getString("cpOrderId"));
+            itemInfo.setPaytime(jsonObj.getString("time"));
             itemInfo.setRoleName(jsonObj.getString("roleName"));
-            itemInfo.setRolelv(jsonObj.getInt("rolelv"));
-            itemInfo.setServerName(jsonObj.getString("serverName"));
-            itemInfo.setServerId(jsonObj.getInt("serverId"));
-            itemInfo.setGoodName(jsonObj.getString("goodName"));
-
+            itemInfo.setRolelv(jsonObj.getInt("level"));
+            itemInfo.setServerName(jsonObj.getString("gameServerName"));
+            itemInfo.setServerId(jsonObj.getInt("gameServerId"));
+            itemInfo.setGoodName(jsonObj.getString("productName"));
+            itemInfo.setNotifyUrl(jsonObj.getString("payNotifyUrl"));
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -1,9 +1,9 @@
 ﻿#后台包渠道
-packageChannel = a_xiao7
+packageChannel = sz
 #前端包插件名
-packagePluginName = X7
+packagePluginName = SZ
 #后台包ID
-packageId = 1067331533
+packageId = 1107331985
 
 x7AppKey = 1505f1157e6f03e6b1e3af8060fefdfa
 
@@ -14,9 +14,9 @@ sdkVersion = 1.0.0
 sdkSupportPackageName = com.szgame.sdk.thirdplugin
 
 #SZ
-sdkLoginSupport = X7
+sdkLoginSupport = SZ
 
 #SZ
-sdkPaySupport = X7
+sdkPaySupport = SZ
 
-sdkAnalyticSupport = X7
+sdkAnalyticSupport = SZ
